@@ -461,7 +461,15 @@ window.onload=async function(){
     }
     months=data.sheets.map(s=>s.properties.title).filter(n=>!SKIP.some(s=>n.toLowerCase()===s.toLowerCase()));
     if(!months.length){g('panel-day').innerHTML='<div class="empty">Нет листов</div>';return;}
-    curMonth=months[months.length-1];
+    // Try to find current month in sheets list
+    const now = new Date();
+    const MRU_INIT = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    const curMonthName = MRU_INIT[now.getMonth()] + ' ' + now.getFullYear();
+    if(months.includes(curMonthName)){
+      curMonth = curMonthName;
+    } else {
+      curMonth = months[months.length-1]; // fallback to last available
+    }
     buildSel();
     switchTab('day');
   }catch(e){
