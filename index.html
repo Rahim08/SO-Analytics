@@ -281,7 +281,7 @@ body{
 <!-- ▼ ВСТАВЬ СЮДА СВОИ ДАННЫЕ -->
 <script>
 const SHEET_ID = '1B485QDsOHIkGRDz5_ljOO2k98g64Y32ANtPo7U6KNSU';
-const API_KEY  = 'AIzaSyAjGIIL0E1yvT3vaAhofI0NElS5q-oi86g'; // ← только ты видишь этот файл
+const API_KEY  = 'ВСТАВЬ_СЮДА_СВОЙ_API_КЛЮЧ'; // ← только ты видишь этот файл
 const LOGO_URL = 'https://i.postimg.cc/Dy1qT843/Bezymannyj-1-(1).jpg';
 
 // Листы которые не показываем
@@ -529,9 +529,18 @@ async function loadDays(){
     const rows=await getSheetData(curMonth);
     days=extractDays(rows,curMonth);
     if(!days.length){g('panel-day').innerHTML='<div class="empty">Нет данных</div>';return;}
-    // Restore saved day or default to last day
-    const savedIdx=loadDayIdx();
-    dayIdx=(savedIdx>=0&&savedIdx<days.length)?savedIdx:days.length-1;
+    // Find today's date or last available day
+    const todayStr = (function(){
+      const d=new Date();
+      return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
+    })();
+    const todayIdx = days.findIndex(d=>d.date===todayStr);
+    if(todayIdx>=0){
+      dayIdx=todayIdx; // found today
+    } else {
+      // Today not found - use last available day
+      dayIdx=days.length-1;
+    }
     // Load kassa and envelope FIRST, then render
     const [kd,ed]=await Promise.all([getKassaRows(rows),getEnvRows(rows)]);
     kCache={rows:kd};
